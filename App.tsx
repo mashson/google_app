@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Image as ImageIcon, Sparkles, Wand2, Download, RefreshCw, Type, AlertCircle, Heading } from 'lucide-react';
+import { Image as ImageIcon, Sparkles, Wand2, Download, RefreshCw, Type, AlertCircle, Heading, RotateCcw } from 'lucide-react';
 import { generateVisualDescription, generateImageFromPrompt, editImageWithPrompt } from './services/gemini';
 import { Button } from './components/Button';
 
@@ -112,6 +112,25 @@ function App() {
     setState(prev => ({ ...prev, currentImage: img }));
   };
 
+  const handleReset = () => {
+    if (state.blogTitle || state.blogContent || state.currentImage) {
+      if (!window.confirm('작성 중인 내용과 생성된 이미지가 모두 삭제됩니다. 초기화하시겠습니까?')) {
+        return;
+      }
+    }
+    
+    setState({
+      status: 'idle',
+      errorMessage: null,
+      blogTitle: '',
+      blogContent: '',
+      currentImage: null,
+      generatedPrompt: null,
+      history: [],
+    });
+    setEditInput('');
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Header */}
@@ -121,10 +140,22 @@ function App() {
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md">
               <Sparkles size={18} />
             </div>
-            <h1 className="text-xl font-bold text-slate-800">나노 블로그 비주얼라이저</h1>
+            <h1 className="text-xl font-bold text-slate-800 hidden sm:block">나노 블로그 비주얼라이저</h1>
+            <h1 className="text-xl font-bold text-slate-800 sm:hidden">블로그 비주얼라이저</h1>
           </div>
-          <div className="text-xs text-slate-500 font-medium border border-slate-200 px-2 py-1 rounded hidden sm:block">
-            Gemini 2.5 Flash Image (16:9)
+          
+          <div className="flex items-center gap-3">
+            <div className="text-xs text-slate-500 font-medium border border-slate-200 px-2 py-1 rounded hidden md:block">
+              Gemini 2.5 Flash Image (16:9)
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={handleReset} 
+              icon={<RotateCcw size={14} />}
+              className="px-3 py-1.5 text-sm border-slate-300 text-slate-600 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+            >
+              초기화
+            </Button>
           </div>
         </div>
       </header>
